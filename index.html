@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aburrá Vivo</title>
+  <link rel="icon" type="image/png" href="img/image52.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Questrial&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --verde-oscuro: #0B261A;
+      --verde-lima: #9FBB44;
+      --crema: #F4F0E6;
+      --azul-verde: #305D63;
+      --rosa: #C98B82;
+      --font-title: 'Comfortaa', sans-serif;
+      --font-body: 'Questrial', sans-serif;
+      --tr: 0.35s cubic-bezier(.4,0,.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--crema); color: var(--verde-oscuro); overflow-x: hidden; }
+    h1,h2,h3,h4,h5 { font-family: var(--font-title); font-weight: 700; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--crema); }
+    ::-webkit-scrollbar-thumb { background: var(--verde-lima); border-radius: 3px; }
+
+    /* ─── LOADER ─── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--verde-oscuro);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;
+      transition: opacity .6s ease, visibility .6s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-logo { font-family: var(--font-title); font-weight: 700; font-size: 2.4rem; color: var(--crema); }
+    .loader-logo span { color: var(--verde-lima); }
+    .loader-bar { width: 180px; height: 3px; background: rgba(255,255,255,.15); border-radius: 2px; overflow: hidden; }
+    .loader-fill { height: 100%; width: 0; background: var(--verde-lima); animation: lFill 1.8s ease forwards; }
+    @keyframes lFill { to { width: 100%; } }
+
+    /* ─── PROGRESS BAR ─── */
+    #prog { position: fixed; top: 0; left: 0; height: 3px; z-index: 1001; background: var(--verde-lima); width: 0; box-shadow: 0 0 8px rgba(159,187,68,.6); transition: width .1s linear; }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 3rem;
+      transition: background var(--tr), padding var(--tr), box-shadow var(--tr);
+    }
+    nav.scrolled { background: rgba(11,38,26,.97); padding: .75rem 3rem; box-shadow: 0 2px 24px rgba(0,0,0,.25); backdrop-filter: blur(12px); }
+    .nav-logo { font-family: var(--font-title); font-weight: 700; font-size: 1.35rem; color: var(--crema); display: flex; align-items: center; gap: .5rem; }
+    .nav-logo span { color: var(--verde-lima); }
+    .nav-logo img { width: 32px; height: 32px; object-fit: contain; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links > li { position: relative; }
+    .nav-links > li > a { font-size: .92rem; color: var(--crema); padding: .4rem 0; position: relative; transition: color var(--tr); display: flex; align-items: center; gap: .35rem; }
+    .nav-links > li > a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--verde-lima); transition: width var(--tr); }
+    .nav-links > li > a:hover, .nav-links > li > a.active { color: var(--verde-lima); }
+    .nav-links > li > a:hover::after, .nav-links > li > a.active::after { width: 100%; }
+    .dd-arrow { transition: transform var(--tr); }
+    .dd-open .dd-arrow { transform: rotate(180deg); }
+    /* dropdown */
+    .dropdown {
+      position: absolute; top: calc(100% + 1rem); left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      min-width: 230px; background: rgba(11,38,26,.98);
+      border: 1px solid rgba(159,187,68,.2); border-radius: 14px;
+      padding: .5rem; list-style: none;
+      opacity: 0; visibility: hidden;
+      transition: opacity var(--tr), transform var(--tr), visibility var(--tr);
+      backdrop-filter: blur(14px); box-shadow: 0 20px 56px rgba(0,0,0,.35);
+    }
+    .dd-open + .dropdown, .dropdown.open { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .dropdown li a { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; border-radius: 9px; font-size: .88rem; color: var(--crema); transition: background var(--tr), color var(--tr); }
+    .dropdown li a:hover { background: rgba(159,187,68,.15); color: var(--verde-lima); }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background: rgba(159,187,68,.2); color: var(--verde-lima); font-family: var(--font-title); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    /* hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+    .hamburger span { display: block; width: 26px; height: 2px; background: var(--crema); border-radius: 2px; transition: transform var(--tr), opacity var(--tr); }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    /* mobile overlay */
+    .mob-menu { position: fixed; inset: 0; z-index: 999; background: var(--verde-oscuro); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.4rem; opacity: 0; visibility: hidden; transition: opacity var(--tr), visibility var(--tr); }
+    .mob-menu.open { opacity: 1; visibility: visible; }
+    .mob-menu a { font-family: var(--font-title); font-size: 1.35rem; color: var(--crema); transition: color var(--tr); }
+    .mob-menu a:hover { color: var(--verde-lima); }
+    .mob-label { font-size: .75rem; color: var(--verde-lima); text-transform: uppercase; letter-spacing: .12em; }
+    .mob-sub { display: flex; flex-direction: column; align-items: center; gap: .7rem; }
+
+    /* ─── BACK TO TOP ─── */
+    #btt { position: fixed; bottom: 2rem; right: 2rem; z-index: 500; width: 44px; height: 44px; border-radius: 50%; background: var(--verde-lima); color: var(--verde-oscuro); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(159,187,68,.4); opacity: 0; visibility: hidden; transition: opacity var(--tr), visibility var(--tr), transform var(--tr); }
+    #btt.vis { opacity: 1; visibility: visible; }
+    #btt:hover { transform: translateY(-4px); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes floatP { 0%,100%{transform:translateY(0) scale(1);opacity:.25} 50%{transform:translateY(-38px) scale(1.08);opacity:.6} }
+    @keyframes scrollL { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+    .reveal        { opacity: 0; transform: translateY(36px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-l      { opacity: 0; transform: translateX(-36px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-r      { opacity: 0; transform: translateX(36px); transition: opacity .7s ease, transform .7s ease; }
+    .revealed      { opacity: 1 !important; transform: none !important; }
+    .d1 { transition-delay: .1s; } .d2 { transition-delay: .2s; } .d3 { transition-delay: .3s; } .d4 { transition-delay: .4s; } .d5 { transition-delay: .5s; }
+
+    /* ─── SECTIONS ─── */
+    .section { padding: 7rem 2rem; position: relative; }
+    .inner { max-width: 1100px; margin: 0 auto; }
+    .sec-tag { display: inline-flex; align-items: center; gap: .5rem; font-size: .76rem; text-transform: uppercase; letter-spacing: .15em; color: var(--verde-lima); margin-bottom: .9rem; }
+    .sec-tag::before { content: ''; display: block; width: 22px; height: 2px; background: var(--verde-lima); }
+    .sec-title { font-size: clamp(1.9rem, 4.5vw, 3.2rem); line-height: 1.15; margin-bottom: 1.25rem; }
+    .sec-lead { font-size: 1.05rem; line-height: 1.8; max-width: 680px; margin-bottom: 2.5rem; }
+    .sub-title { font-size: 1.2rem; display: flex; align-items: center; gap: .55rem; margin-bottom: 1rem; }
+    .sub-title::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--verde-lima); flex-shrink: 0; }
+    .step-badge { display: inline-flex; align-items: center; gap: .55rem; background: rgba(159,187,68,.12); border: 1px solid rgba(159,187,68,.25); border-radius: 100px; padding: .38rem 1rem; font-size: .78rem; color: var(--verde-lima); margin-bottom: 1rem; width: fit-content; }
+    .sn { width: 22px; height: 22px; background: var(--verde-lima); color: var(--verde-oscuro); border-radius: 50%; font-family: var(--font-title); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+    /* ─── HERO ─── */
+    #inicio { min-height: 100vh; position: relative; overflow: hidden; background: var(--verde-oscuro); display: flex; flex-direction: column; }
+    .hero-img-bg { position: absolute; inset: 0; }
+    .hero-img-bg img { width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(11,38,26,.5) 0%, rgba(11,38,26,.8) 60%, rgba(11,38,26,1) 100%); }
+    .particles { position: absolute; inset: 0; pointer-events: none; }
+    .particle { position: absolute; border-radius: 50%; background: rgba(159,187,68,.12); animation: floatP var(--d,8s) ease-in-out infinite; animation-delay: var(--dl,0s); }
+    .hero-body { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1.5rem; }
+    .hero-tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(159,187,68,.13); border: 1px solid rgba(159,187,68,.28); color: var(--verde-lima); border-radius: 100px; padding: .38rem 1rem; font-size: .78rem; margin-bottom: 1.5rem; animation: fadeUp .8s ease .2s both; }
+    .hero-tag::before { content: '●'; font-size: .45rem; animation: pulse 2s infinite; }
+    .hero-h1 { font-size: clamp(3.2rem, 9vw, 6.5rem); color: var(--crema); line-height: 1.02; margin-bottom: .9rem; animation: fadeUp .8s ease .4s both; }
+    .hero-h1 .acc { color: var(--verde-lima); }
+    .hero-sub { font-size: clamp(.95rem, 2.5vw, 1.18rem); color: rgba(244,240,230,.72); max-width: 560px; line-height: 1.75; margin-bottom: 2.5rem; animation: fadeUp .8s ease .6s both; }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp .8s ease .8s both; }
+    .btn { padding: .9rem 2rem; border-radius: 100px; font-family: var(--font-title); font-weight: 600; font-size: .93rem; cursor: pointer; border: none; transition: transform var(--tr), box-shadow var(--tr); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-p { background: var(--verde-lima); color: var(--verde-oscuro); box-shadow: 0 4px 20px rgba(159,187,68,.4); }
+    .btn-p:hover { box-shadow: 0 8px 32px rgba(159,187,68,.5); }
+    .btn-o { background: transparent; color: var(--crema); border: 1.5px solid rgba(244,240,230,.38); }
+    .btn-o:hover { background: rgba(244,240,230,.08); }
+    .scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .4rem; animation: fadeUp .8s ease 1.2s both; }
+    .scroll-hint span { font-size: .72rem; color: rgba(244,240,230,.4); letter-spacing: .15em; text-transform: uppercase; }
+    .scroll-line { width: 1px; height: 46px; background: linear-gradient(to bottom, transparent, rgba(244,240,230,.4)); animation: scrollL 2s ease infinite; }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--crema); }
+    .about-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 5rem; align-items: center; }
+    .about-cards { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1.5rem; }
+    .acard { background: white; border-radius: 14px; padding: 1.4rem; border-left: 4px solid var(--verde-lima); box-shadow: 0 2px 14px rgba(11,38,26,.06); transition: transform var(--tr), box-shadow var(--tr); }
+    .acard:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(11,38,26,.1); }
+    .acard h4 { font-size: .95rem; margin-bottom: .4rem; }
+    .acard p { font-size: .9rem; line-height: 1.7; color: rgba(11,38,26,.7); }
+    .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+    .stat { background: var(--verde-oscuro); color: var(--crema); border-radius: 14px; padding: 1.4rem; text-align: center; transition: transform var(--tr); }
+    .stat:hover { transform: scale(1.03); }
+    .stat .num { font-family: var(--font-title); font-size: 2rem; font-weight: 700; color: var(--verde-lima); }
+    .stat p { font-size: .78rem; opacity: .7; margin-top: .25rem; }
+    .stat.rosa { background: var(--rosa); }
+    .stat.rosa .num { color: var(--crema); }
+
+    /* ─── STAGE BANNERS (section header images) ─── */
+    .stage-banner { width: 100%; border-radius: 20px; overflow: hidden; margin-bottom: 3.5rem; max-height: 380px; }
+    .stage-banner img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── EMPATIZAR ─── */
+    #empatizar { background: var(--verde-oscuro); color: var(--crema); }
+    #empatizar .sec-lead { color: rgba(244,240,230,.72); }
+    #empatizar .sub-title { color: var(--crema); }
+    .emp-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 4rem; align-items: start; margin-bottom: 4rem; }
+    .enc-box { background: rgba(244,240,230,.07); border: 1px solid rgba(244,240,230,.12); border-radius: 14px; padding: 1.4rem; margin-top: 1.5rem; }
+    .enc-box h4 { font-size: .9rem; color: var(--verde-lima); margin-bottom: .6rem; }
+    .enc-box p { font-size: .87rem; line-height: 1.65; opacity: .78; margin-bottom: 1rem; }
+    .enc-link { display: inline-flex; align-items: center; gap: .45rem; background: var(--verde-lima); color: var(--verde-oscuro); border-radius: 100px; padding: .55rem 1.1rem; font-family: var(--font-title); font-size: .82rem; font-weight: 600; transition: transform var(--tr), box-shadow var(--tr); }
+    .enc-link:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(159,187,68,.4); }
+    /* survey result image */
+    .survey-img { border-radius: 16px; overflow: hidden; margin-top: 2rem; }
+    .survey-img img { width: 100%; object-fit: cover; }
+    /* empatizar side images grid */
+    .emp-side { display: flex; flex-direction: column; gap: .75rem; }
+    .emp-side img { border-radius: 12px; object-fit: cover; transition: transform var(--tr); }
+    .emp-side img:hover { transform: scale(1.03); }
+    /* hallazgos */
+    .hallazgos { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-bottom: 4rem; }
+    .hcard { background: rgba(244,240,230,.07); border: 1px solid rgba(244,240,230,.1); border-radius: 14px; padding: 1.4rem; transition: background var(--tr), transform var(--tr); }
+    .hcard:hover { background: rgba(244,240,230,.12); transform: translateY(-4px); }
+    .hcard .ico { font-size: 1.8rem; margin-bottom: .65rem; }
+    .hcard h4 { font-size: .92rem; margin-bottom: .4rem; }
+    .hcard p { font-size: .86rem; line-height: 1.65; opacity: .75; }
+    /* PESTEL */
+    .pestel-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
+    .pcard { background: rgba(244,240,230,.06); border: 1px solid rgba(244,240,230,.1); border-radius: 14px; padding: 1.4rem; transition: background var(--tr), transform var(--tr); cursor: default; }
+    .pcard:hover { background: rgba(244,240,230,.11); transform: translateY(-4px); }
+    .pcard .pl { font-family: var(--font-title); font-size: 2rem; font-weight: 700; color: var(--verde-lima); line-height: 1; }
+    .pcard h4 { font-size: .8rem; opacity: .55; margin-bottom: .65rem; }
+    .pcard p { font-size: .86rem; line-height: 1.65; opacity: .8; }
+
+    /* ─── DEFINIR ─── */
+    #definir { background: var(--crema); }
+    .def-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 4rem; }
+    .concepto-box { background: var(--verde-oscuro); color: var(--crema); border-radius: 18px; padding: 2.4rem; position: relative; overflow: hidden; }
+    .concepto-box::before { content: '"'; position: absolute; top: -1.5rem; left: .8rem; font-size: 8rem; color: rgba(159,187,68,.12); font-family: var(--font-title); line-height: 1; }
+    .concepto-box blockquote { font-family: var(--font-title); font-size: 1.25rem; font-weight: 600; color: var(--verde-lima); line-height: 1.4; position: relative; z-index: 1; margin-bottom: .9rem; }
+    .concepto-box p { font-size: .9rem; line-height: 1.72; opacity: .8; margin-top: .6rem; }
+    .criterios { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .criterios li { display: flex; gap: .9rem; align-items: flex-start; background: white; border-radius: 12px; padding: 1.2rem; box-shadow: 0 2px 12px rgba(11,38,26,.06); transition: transform var(--tr); }
+    .criterios li:hover { transform: translateX(4px); }
+    .c-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .criterios li:nth-child(1) .c-ico { background: rgba(159,187,68,.15); }
+    .criterios li:nth-child(2) .c-ico { background: rgba(48,93,99,.15); }
+    .criterios li:nth-child(3) .c-ico { background: rgba(201,139,130,.15); }
+    .c-text h5 { font-size: .9rem; margin-bottom: .28rem; }
+    .c-text p { font-size: .84rem; line-height: 1.6; color: rgba(11,38,26,.65); }
+    /* referentes: 12 images in a masonry-like grid */
+    .ref-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .75rem; margin-top: 1.5rem; }
+    .ref-grid img { border-radius: 10px; aspect-ratio: 1; object-fit: cover; transition: transform var(--tr); }
+    .ref-grid img:hover { transform: scale(1.05); }
+    /* moodboard: single full-width image */
+    .moodboard-img { border-radius: 18px; overflow: hidden; margin-top: 1.5rem; }
+    .moodboard-img img { width: 100%; object-fit: cover; max-height: 500px; }
+    /* palette */
+    .palette { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .swatch { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
+    .sw-circle { width: 62px; height: 62px; border-radius: 50%; box-shadow: 0 4px 14px rgba(0,0,0,.12); transition: transform var(--tr); cursor: pointer; }
+    .sw-circle:hover { transform: scale(1.12); }
+    .sw-label { font-size: .68rem; color: rgba(11,38,26,.55); }
+    /* palette image */
+    .palette-img { border-radius: 14px; overflow: hidden; margin-top: 1.5rem; }
+    .palette-img img { width: 100%; object-fit: cover; max-height: 220px; }
+    /* typography */
+    .typo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+    .typo-card { background: white; border-radius: 14px; padding: 2rem; box-shadow: 0 2px 14px rgba(11,38,26,.06); }
+    .typo-big { font-family: 'Comfortaa', sans-serif; font-weight: 700; font-size: 2rem; margin-bottom: .4rem; }
+    .typo-body-sample { font-family: 'Questrial', sans-serif; font-size: 1rem; line-height: 1.7; }
+    .typo-lbl { font-size: .7rem; color: rgba(11,38,26,.42); margin-top: .75rem; text-transform: uppercase; letter-spacing: .1em; }
+    /* typography images from doc */
+    .typo-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+    .typo-imgs img { border-radius: 12px; object-fit: cover; width: 100%; }
+    /* logos section */
+    .logos-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 1.5rem; }
+    .logo-card { background: white; border-radius: 14px; padding: 1.4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(11,38,26,.07); transition: transform var(--tr), box-shadow var(--tr); min-height: 120px; }
+    .logo-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(11,38,26,.12); }
+    .logo-card img { width: 100%; max-height: 100px; object-fit: contain; }
+    .logo-card.final { border: 2px solid var(--verde-lima); position: relative; }
+    .logo-card.final::after { content: '✓ Logo final'; position: absolute; bottom: .5rem; left: 50%; transform: translateX(-50%); font-size: .65rem; color: var(--verde-lima); font-family: var(--font-title); font-weight: 600; white-space: nowrap; }
+    /* illustraciones */
+    .ilus-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 1.5rem; }
+    .ilus-grid img { border-radius: 12px; aspect-ratio: 1; object-fit: cover; transition: transform var(--tr); }
+    .ilus-grid img:hover { transform: scale(1.04); }
+
+    /* ─── IDEAR ─── */
+    #idear { background: var(--azul-verde); color: var(--crema); }
+    #idear .sec-lead { color: rgba(244,240,230,.72); }
+    #idear .sub-title { color: var(--crema); }
+    .ideas-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 1.5rem; margin-bottom: 4rem; }
+    .idea-card { background: rgba(244,240,230,.08); border: 1px solid rgba(244,240,230,.12); border-radius: 14px; padding: 1.4rem; transition: background var(--tr), transform var(--tr); }
+    .idea-card:hover { background: rgba(244,240,230,.13); transform: translateY(-4px); }
+    .idea-card .ico { font-size: 1.8rem; margin-bottom: .65rem; }
+    .idea-card h4 { font-size: .92rem; margin-bottom: .4rem; }
+    .idea-card p { font-size: .85rem; line-height: 1.65; opacity: .75; }
+    /* kit */
+    .kit-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 2rem; }
+    .kit-piece { background: rgba(244,240,230,.07); border: 1px solid rgba(244,240,230,.14); border-radius: 18px; overflow: hidden; transition: transform var(--tr), box-shadow var(--tr); }
+    .kit-piece:hover { transform: translateY(-6px); box-shadow: 0 18px 44px rgba(0,0,0,.22); }
+    .kit-img { overflow: hidden; }
+    .kit-img img { width: 100%; aspect-ratio: 4/3; object-fit: cover; transition: transform var(--tr); }
+    .kit-piece:hover .kit-img img { transform: scale(1.06); }
+    /* kit mapa: single image */
+    /* kit tarjetas: 2 images side by side */
+    .kit-2img { display: grid; grid-template-columns: 1fr 1fr; }
+    .kit-2img img { aspect-ratio: 4/3; object-fit: cover; }
+    /* kit siembra: 3 images */
+    .kit-3img { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+    .kit-3img img { aspect-ratio: 1; object-fit: cover; }
+    .kit-body { padding: 1.4rem; }
+    .kit-body h4 { font-size: 1rem; margin-bottom: .4rem; }
+    .kit-body p { font-size: .86rem; line-height: 1.65; opacity: .75; }
+    .kit-n { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; background: var(--verde-lima); color: var(--verde-oscuro); border-radius: 50%; font-family: var(--font-title); font-size: .76rem; font-weight: 700; margin-bottom: .65rem; }
+    /* bocetos: single image */
+    .boceto-img { border-radius: 16px; overflow: hidden; margin-top: 1.5rem; }
+    .boceto-img img { width: 100%; object-fit: cover; max-height: 420px; }
+    /* logo options in idear */
+    .logo-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; align-items: start; }
+    .logo-2col-block { background: rgba(244,240,230,.07); border: 1px solid rgba(244,240,230,.14); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .logo-2col-block h3 { font-size: 1rem; color: var(--crema); }
+    .logo-2col-block p { font-size: .84rem; opacity: .75; line-height: 1.65; }
+    .logo-2col-block img { width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; background: rgba(244,240,230,.05); }
+    @media (max-width: 640px) { .logo-2col { grid-template-columns: 1fr; } }
+
+    /* ─── PROTOTIPAR ─── */
+    #prototipar { background: var(--crema); }
+    .proto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 4rem; }
+    .proto-block h3 { font-size: 1.2rem; margin-bottom: .75rem; }
+    .proto-block p { font-size: .92rem; line-height: 1.75; color: rgba(11,38,26,.72); margin-bottom: 1.3rem; }
+    /* empaque: 7 images in responsive grid */
+    .empaque-imgs { display: grid; grid-template-columns: repeat(4,1fr); gap: .65rem; }
+    .empaque-imgs img { border-radius: 10px; aspect-ratio: 1; object-fit: cover; transition: transform var(--tr); }
+    .empaque-imgs img:hover { transform: scale(1.05); }
+    .empaque-imgs img:first-child { grid-column: 1 / -1; aspect-ratio: 16/6; }
+    /* mapa proto: 2 images */
+    .mapa-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .mapa-imgs img { border-radius: 12px; aspect-ratio: 4/3; object-fit: cover; transition: transform var(--tr); }
+    .mapa-imgs img:hover { transform: scale(1.04); }
+    /* tarjetas proto: 3 images */
+    .tarjetas-imgs { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; margin-top: 1rem; }
+    .tarjetas-imgs img { border-radius: 12px; aspect-ratio: 3/4; object-fit: cover; box-shadow: 0 4px 16px rgba(11,38,26,.1); transition: transform var(--tr); }
+    .tarjetas-imgs img:hover { transform: scale(1.04); }
+
+    /* ─── FOOTER ─── */
+    footer { background: var(--verde-oscuro); color: var(--crema); padding: 4rem 2rem 2rem; }
+    .foot-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; }
+    .foot-brand .nav-logo { margin-bottom: 1rem; }
+    .foot-brand p { font-size: .87rem; line-height: 1.7; opacity: .6; max-width: 280px; }
+    .foot-sec h5 { font-size: .82rem; text-transform: uppercase; letter-spacing: .13em; color: var(--verde-lima); margin-bottom: 1rem; }
+    .foot-sec ul { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+    .foot-sec ul li a { font-size: .87rem; opacity: .62; transition: opacity var(--tr); }
+    .foot-sec ul li a:hover { opacity: 1; }
+    .foot-bottom { max-width: 1100px; margin: 2.5rem auto 0; padding-top: 1.5rem; border-top: 1px solid rgba(244,240,230,.1); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-size: .8rem; opacity: .5; }
+    .foot-authors { display: flex; flex-direction: column; gap: .18rem; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      nav.scrolled { padding: .7rem 1.5rem; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .emp-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .hallazgos { grid-template-columns: 1fr 1fr; }
+      .pestel-grid { grid-template-columns: 1fr 1fr; }
+      .def-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .ref-grid { grid-template-columns: repeat(3,1fr); }
+      .logos-grid { grid-template-columns: 1fr 1fr; }
+      .ilus-grid { grid-template-columns: 1fr 1fr; }
+      .ideas-grid { grid-template-columns: 1fr 1fr; }
+      .kit-grid { grid-template-columns: 1fr; }
+      .proto-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .empaque-imgs { grid-template-columns: repeat(3,1fr); }
+      .empaque-imgs img:first-child { grid-column: 1/-1; }
+      .tarjetas-imgs { grid-template-columns: 1fr 1fr; }
+      .foot-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .foot-bottom { flex-direction: column; text-align: center; }
+      .typo-grid { grid-template-columns: 1fr; }
+      .typo-imgs { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 580px) {
+      .hallazgos { grid-template-columns: 1fr; }
+      .pestel-grid { grid-template-columns: 1fr; }
+      .ref-grid { grid-template-columns: 1fr 1fr; }
+      .logos-grid { grid-template-columns: 1fr 1fr; }
+      .ilus-grid { grid-template-columns: 1fr 1fr; }
+      .ideas-grid { grid-template-columns: 1fr; }
+      .empaque-imgs { grid-template-columns: 1fr 1fr; }
+      .tarjetas-imgs { grid-template-columns: 1fr; }
+      .section { padding: 5rem 1.25rem; }
+      .kit-2img { grid-template-columns: 1fr; }
+      .kit-3img { grid-template-columns: 1fr 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+      .typo-imgs { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">Aburrá <span>Vivo</span></div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<div id="prog"></div>
+
+<button id="btt" aria-label="Volver arriba">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- NAVBAR -->
+<nav id="nav">
+  <a href="#inicio" class="nav-logo">
+    <!-- image20 = logo principal en la navbar -->
+    <img src="img/image48.png" alt="Logo Aburrá Vivo" style="width:auto;height:64px;object-fit:contain;mix-blend-mode:screen;">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#about">El Proyecto</a></li>
+    <li>
+      <a href="#" id="dd-toggle">
+        Design Thinking
+        <svg class="dd-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+      <ul class="dropdown" id="dropdown">
+        <li><a href="#empatizar"><span class="step-num">1</span> Empatizar</a></li>
+        <li><a href="#definir"><span class="step-num">2</span> Definir</a></li>
+        <li><a href="#idear"><span class="step-num">3</span> Idear</a></li>
+        <li><a href="#prototipar"><span class="step-num">4</span> Prototipar</a></li>
+      </ul>
+    </li>
+  </ul>
+  <button class="hamburger" id="ham"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mob">
+  <a href="#inicio" class="mob-link">Inicio</a>
+  <a href="#about" class="mob-link">El Proyecto</a>
+  <div class="mob-label">Design Thinking</div>
+  <div class="mob-sub">
+    <a href="#empatizar" class="mob-link">① Empatizar</a>
+    <a href="#definir" class="mob-link">② Definir</a>
+    <a href="#idear" class="mob-link">③ Idear</a>
+    <a href="#prototipar" class="mob-link">④ Prototipar</a>
+  </div>
+</div>
+
+<!-- ══════════════════════ INICIO / HERO ══════════════════════ -->
+<!-- image1.png = banner principal del Inicio -->
+<section id="inicio">
+  <div class="hero-img-bg">
+    <img src="img/image1.png" alt="Aburrá Vivo banner">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-body">
+    <div class="hero-tag">PIA 2026_1 · Proyecto Integrador de Aula</div>
+    <h1 class="hero-h1">Aburrá<br><span class="acc">Vivo</span></h1>
+    <p class="hero-sub">Sincronía entre Concreto y Tejido Vivo — un proyecto que conecta a las personas con los corredores verdes de Medellín y la biodiversidad urbana que los rodea.</p>
+    <div class="hero-cta">
+      <a href="#about" class="btn btn-p">Explorar el proyecto</a>
+      <a href="#empatizar" class="btn btn-o">Ver Design Thinking</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ¿QUÉ ES? ══════════════════════ -->
+<section class="section" id="about">
+  <div class="inner">
+    <div class="about-grid">
+      <div class="reveal-l">
+        <div class="sec-tag">El Proyecto</div>
+        <h2 class="sec-title">¿Qué es<br>Aburrá Vivo?</h2>
+        <p class="sec-lead" style="color:rgba(11,38,26,.72)">Un proyecto que busca mostrar la importancia de los corredores verdes de Medellín y cómo estos ayudan a conectar la naturaleza con la ciudad.</p>
+        <div class="about-cards">
+          <div class="acard reveal d1">
+            <h4>¿Qué transmite?</h4>
+            <p>Conciencia ambiental, conexión con la naturaleza y apropiación ciudadana. Busca que las personas reconozcan el valor de los árboles y las especies urbanas. También transmite el equilibrio entre el concreto y la naturaleza dentro del entorno urbano.</p>
+          </div>
+          <div class="acard reveal d2">
+            <h4>¿Por qué existe?</h4>
+            <p>Para combatir la "ceguera vegetal urbana", haciendo visible la función de los árboles y acercando la información ambiental a las personas de una forma más visual, dinámica y cercana.</p>
+          </div>
+          <div class="acard reveal d3">
+            <h4>¿Qué son los corredores verdes?</h4>
+            <p>Espacios con árboles y vegetación que mejoran la calidad del aire, reducen el calor urbano, conectan ecosistemas y generan bienestar. Medellín cuenta con aproximadamente 30 corredores verdes.</p>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="about-stats">
+          <div class="stat">
+            <div class="num">~30</div>
+            <p>Corredores verdes en Medellín</p>
+          </div>
+          <div class="stat rosa">
+            <div class="num">100%</div>
+            <p>Naturaleza + Ciudad conectadas</p>
+          </div>
+          <div class="stat" style="grid-column:1/-1;background:var(--azul-verde);">
+            <div class="num" style="font-size:1.3rem;">"Sincronía entre Concreto y Tejido Vivo"</div>
+            <p style="margin-top:.5rem;">Concepto central del proyecto</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ETAPA 1: EMPATIZAR ══════════════════════ -->
+<section class="section" id="empatizar">
+  <div class="inner">
+
+    <!-- image2.png = banner de la etapa Empatizar -->
+    <div class="stage-banner reveal">
+      <img src="img/image2.png" alt="Etapa Empatizar">
+    </div>
+
+    <div class="step-badge reveal"><span class="sn">1</span> Design Thinking</div>
+    <h2 class="sec-title reveal">Empatizar</h2>
+    <p class="sec-lead reveal">Comprender el problema desde la experiencia y percepción de las personas. Investigar cómo los ciudadanos se relacionan con los corredores verdes de Medellín, cuáles son sus necesidades, comportamientos y dificultades.</p>
+
+    <!-- Investigación + Encuesta -->
+    <div class="emp-grid">
+      <div class="reveal-l">
+        <h3 class="sub-title">Investigación</h3>
+        <p style="opacity:.8;line-height:1.75;font-size:.93rem;">Se analizó la relación entre Medellín y sus corredores verdes, identificando el concepto de "ceguera vegetal urbana". La mayoría de ciudadanos perciben los corredores verdes únicamente como elementos decorativos, sin reconocer su importancia ecológica y ambiental.</p>
+        <p style="opacity:.8;line-height:1.75;font-size:.93rem;margin-top:1rem;">También se evidenció la falta de información visual y atractiva sobre biodiversidad urbana, y una educación ambiental demasiado técnica. Los corredores verdes contribuyen a reducir la temperatura, mejorar la calidad del aire y conectar ecosistemas dentro de Medellín.</p>
+
+        <h3 class="sub-title" style="margin-top:2rem;">Encuesta</h3>
+        <p style="opacity:.8;line-height:1.75;font-size:.93rem;">Se realizaron encuestas para conocer cómo las personas perciben los corredores verdes y qué tanto interactúan con ellos en su vida cotidiana.</p>
+        <div class="enc-box">
+          <h4>Encuesta ciudadana</h4>
+          <p>Los hallazgos demostraron que sí existe interés ambiental por parte de la ciudadanía, pero hace falta una conexión más cercana entre las personas y la naturaleza urbana.</p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeiWgEi3DSLHaScmtwp7pBGlFmgv58TOLvdUVNrisBxEKQ9zQ/viewform" target="_blank" class="enc-link">
+            Ver encuesta
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+
+        <!-- image3.png = imagen de resultados de la encuesta -->
+        <div class="survey-img reveal">
+          <img src="img/image3.png" alt="Resultados encuesta">
+        </div>
+      </div>
+
+      <!-- No hay imágenes de investigación adicionales especificadas aparte de la image3 -->
+      <div class="reveal-r" style="display:flex;flex-direction:column;gap:1rem;">
+        <h3 class="sub-title">Hallazgos</h3>
+        <div class="hcard">
+          <div class="ico">👁️</div>
+          <h4>Ceguera vegetal</h4>
+          <p>La mayoría de personas no presta atención consciente a la vegetación durante sus recorridos diarios, a pesar de convivir constantemente con los corredores verdes.</p>
+        </div>
+        <div class="hcard">
+          <div class="ico">💚</div>
+          <h4>Interés latente</h4>
+          <p>Existe interés por aprender sobre biodiversidad cuando la información se presenta de manera visual, interactiva y cercana.</p>
+        </div>
+        <div class="hcard">
+          <div class="ico">🗺️</div>
+          <h4>Preferencia por experiencias dinámicas</h4>
+          <p>Los usuarios mostraron mayor afinidad hacia mapas, tarjetas y recorridos interactivos como forma de aprender sobre naturaleza urbana.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTEL -->
+    <div style="margin-top:4rem;">
+      <h3 class="sub-title reveal">Análisis PESTEL</h3>
+      <div class="pestel-grid reveal">
+        <div class="pcard d1">
+          <div class="pl">P</div>
+          <h4>Político</h4>
+          <p>Apoyo de la Alcaldía de Medellín, Secretaría de Medio Ambiente y el Área Metropolitana. Incluido en planes de desarrollo urbano y sostenibilidad ambiental.</p>
+        </div>
+        <div class="pcard d2">
+          <div class="pl">E</div>
+          <h4>Económico</h4>
+          <p>Inversión en arborización, mantenimiento y espacios públicos. Genera valorización de sectores, empleo y reducción de gastos en salud.</p>
+        </div>
+        <div class="pcard d3">
+          <div class="pl">S</div>
+          <h4>Social</h4>
+          <p>Mejora la calidad de vida creando espacios más frescos, saludables y agradables. Promueve conciencia ambiental en la comunidad.</p>
+        </div>
+        <div class="pcard d1">
+          <div class="pl">T</div>
+          <h4>Tecnológico</h4>
+          <p>Sensores ambientales, sistemas de riego automatizado y herramientas digitales de planificación urbana para monitoreo ambiental.</p>
+        </div>
+        <div class="pcard d2">
+          <div class="pl">E</div>
+          <h4>Ecológico</h4>
+          <p>Reduce el efecto isla de calor, mejora la calidad del aire y aumenta la biodiversidad. Riesgos: sequías, plagas y cambio climático.</p>
+        </div>
+        <div class="pcard d3">
+          <div class="pl">L</div>
+          <h4>Legal</h4>
+          <p>Cumple normas ambientales: Constitución, Ley 99/1993, Ley 388/1997 y el Plan de Ordenamiento Territorial (POT) de Medellín.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ETAPA 2: DEFINIR ══════════════════════ -->
+<section class="section" id="definir" style="background:var(--crema);">
+  <div class="inner">
+
+    <!-- image4.png = banner de la etapa Definir -->
+    <div class="stage-banner reveal">
+      <img src="img/image4.png" alt="Etapa Definir">
+    </div>
+
+    <div class="step-badge reveal"><span class="sn" style="background:var(--azul-verde);color:var(--crema);">2</span> Design Thinking</div>
+    <h2 class="sec-title reveal">Definir</h2>
+    <p class="sec-lead reveal" style="color:rgba(11,38,26,.72)">Organizar y analizar toda la información para establecer una dirección clara. Identificar necesidades del usuario, la problemática y las oportunidades de diseño.</p>
+
+    <div class="def-grid">
+      <div class="reveal-l">
+        <h3 class="sub-title" style="color:var(--verde-oscuro)">Concepto</h3>
+        <div class="concepto-box">
+          <blockquote>"Sincronía entre Concreto y Tejido Vivo"</blockquote>
+          <p>Medellín no está formada únicamente por concreto e infraestructura, sino también por una red de vida y biodiversidad que la atraviesa mediante los corredores verdes.</p>
+          <p>El concepto busca mostrar cómo lo urbano y lo natural funcionan como sistemas conectados que conviven y se complementan, haciendo visible aquello que normalmente pasa desapercibido.</p>
+          <p>Los corredores verdes funcionan como venas que conectan el territorio, haciendo de Medellín un organismo vivo.</p>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <h3 class="sub-title" style="color:var(--verde-oscuro)">Criterios de diseño</h3>
+        <ul class="criterios">
+          <li>
+            <div class="c-ico">🎨</div>
+            <div class="c-text">
+              <h5>Visual</h5>
+              <p>Identidad que combina elementos geométricos y formas orgánicas. Lenguaje claro, contemporáneo y altamente visual con ilustraciones simplificadas, siluetas botánicas y diagramas.</p>
+            </div>
+          </li>
+          <li>
+            <div class="c-ico">⚡</div>
+            <div class="c-text">
+              <h5>Funcional</h5>
+              <p>Experiencia progresiva donde el usuario explore, reconozca, registre e interactúe con la biodiversidad urbana. Intuitivo y adaptado a recorridos rápidos dentro de la ciudad.</p>
+            </div>
+          </li>
+          <li>
+            <div class="c-ico">♻️</div>
+            <div class="c-text">
+              <h5>Productivo</h5>
+              <p>Materiales sostenibles: cartón ecológico, impresión local y formatos editoriales físicos como mapas desplegables, tarjetas ilustradas y bitácoras.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ANALIZAR REFERENTES: images 5–16 (12 imágenes) -->
+    <div style="margin-top:3rem;" class="reveal">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Analizar referentes</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.7);max-width:720px;margin-bottom:1rem;">
+        Se estudiaron propuestas relacionadas con sostenibilidad urbana, biodiversidad, diseño editorial y experiencias interactivas. Se analizaron identidades que integraban formas orgánicas y estructuras geométricas para representar redes, conexiones y sistemas vivos.
+      </p>
+      <!-- image5 to image16: 12 referente images -->
+      <div class="ref-grid">
+        <img src="img/image5.png"  alt="Referente 1"  onerror="this.style.display='none'">
+        <img src="img/image6.png"  alt="Referente 2"  onerror="this.style.display='none'">
+        <img src="img/image7.png"  alt="Referente 3"  onerror="this.style.display='none'">
+        <img src="img/image8.png"  alt="Referente 4"  onerror="this.style.display='none'">
+        <img src="img/image9.png"  alt="Referente 5"  onerror="this.style.display='none'">
+        <img src="img/image10.png" alt="Referente 6"  onerror="this.style.display='none'">
+        <img src="img/image11.png" alt="Referente 7"  onerror="this.style.display='none'">
+        <img src="img/image12.png" alt="Referente 8"  onerror="this.style.display='none'">
+        <img src="img/image13.png" alt="Referente 9"  onerror="this.style.display='none'">
+        <img src="img/image14.png" alt="Referente 10" onerror="this.style.display='none'">
+        <img src="img/image15.png" alt="Referente 11" onerror="this.style.display='none'">
+        <img src="img/image16.png" alt="Referente 12" onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <!-- MOODBOARD: image17 (una sola imagen) -->
+    <div style="margin-top:3rem;" class="reveal">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Moodboard</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.7);max-width:680px;margin-bottom:1rem;">
+        Se reúnen los elementos visuales que definen la atmósfera del proyecto: colores, formas, texturas y referentes gráficos. Equilibrio entre lo natural y lo urbano, tonos verdes con neutros y formas orgánicas con estructuras geométricas.
+      </p>
+      <!-- image17.jpeg = el moodboard -->
+      <div class="moodboard-img">
+        <img src="img/image17.jpeg" alt="Moodboard Aburrá Vivo">
+      </div>
+    </div>
+
+    <!-- PALETA DE COLOR: image21 -->
+    <div style="margin-top:3.5rem;" class="reveal">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Paleta de color</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.7);max-width:680px;margin-bottom:1rem;">
+        Tonos verdes (biodiversidad y vida urbana), neutros y azulados (entorno urbano y equilibrio) y rosado inspirado en la flor del guayacán, una especie representativa de Medellín.
+      </p>
+      <!-- image21.png = imagen de la paleta de color del documento -->
+      <div class="palette-img">
+        <img src="img/image21.png" alt="Paleta de color">
+      </div>
+      <div class="palette" style="margin-top:1.25rem;">
+        <div class="swatch"><div class="sw-circle" style="background:#0B261A;"  title="Copiar"></div><span class="sw-label">#0B261A</span></div>
+        <div class="swatch"><div class="sw-circle" style="background:#9FBB44;"  title="Copiar"></div><span class="sw-label">#9FBB44</span></div>
+        <div class="swatch"><div class="sw-circle" style="background:#F4F0E6;border:1px solid #ccc;" title="Copiar"></div><span class="sw-label">#F4F0E6</span></div>
+        <div class="swatch"><div class="sw-circle" style="background:#305D63;"  title="Copiar"></div><span class="sw-label">#305D63</span></div>
+        <div class="swatch"><div class="sw-circle" style="background:#C98B82;"  title="Copiar"></div><span class="sw-label">#C98B82</span></div>
+      </div>
+    </div>
+
+    <!-- TIPOGRAFÍA: image22 + image23 -->
+    <div style="margin-top:3.5rem;" class="reveal">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Tipografía</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.7);max-width:680px;margin-bottom:1rem;">
+        <strong>Comfortaa Bold</strong> como fuente principal y para el logo — formas redondeadas y contemporáneas que transmiten cercanía y naturalidad. <strong>Questrial Regular</strong> como tipografía secundaria, más neutral y funcional para textos informativos.
+      </p>
+      <!-- image22 + image23: muestras de tipografía del documento -->
+      <div class="typo-imgs">
+        <img src="img/image22.png" alt="Tipografía Comfortaa" onerror="this.style.display='none'">
+        <img src="img/image23.png" alt="Tipografía Questrial"  onerror="this.style.display='none'">
+      </div>
+      <div class="typo-grid" style="margin-top:1.5rem;">
+        <div class="typo-card">
+          <div class="typo-big">Comfortaa Bold</div>
+          <div class="typo-big" style="font-weight:400;font-size:1.2rem;">Aburrá Vivo — Medellín</div>
+          <div class="typo-lbl">Títulos y logo · Formas redondeadas</div>
+        </div>
+        <div class="typo-card">
+          <div class="typo-body-sample">Questrial Regular<br><br>Los corredores verdes son espacios con árboles y vegetación que mejoran la calidad del aire, reducen el calor urbano y conectan ecosistemas dentro de Medellín.</div>
+          <div class="typo-lbl">Textos informativos · Claridad y legibilidad</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ILUSTRACIONES: image24, image25, image26, image27 -->
+    <div style="margin-top:3.5rem;" class="reveal">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Ilustraciones</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.7);max-width:680px;margin-bottom:1rem;">
+        Estilo simplificado, limpio y contemporáneo inspirado en los paisajes urbanos y naturales de Medellín. Formas orgánicas, colores suaves y la conexión entre los corredores verdes, la ciudad y la biodiversidad urbana.
+      </p>
+      <!-- image24 – image27: las 4 ilustraciones del proyecto -->
+      <div class="ilus-grid">
+        <img src="img/image24.png" alt="Ilustración 1" onerror="this.style.display='none'">
+        <img src="img/image25.png" alt="Ilustración 2" onerror="this.style.display='none'">
+        <img src="img/image26.png" alt="Ilustración 3" onerror="this.style.display='none'">
+        <img src="img/image27.png" alt="Ilustración 4" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ETAPA 3: IDEAR ══════════════════════ -->
+<section class="section" id="idear">
+  <div class="inner">
+
+    <!-- image18.png = banner de la etapa Idear -->
+    <div class="stage-banner reveal">
+      <img src="img/image18.png" alt="Etapa Idear">
+    </div>
+
+    <div class="step-badge reveal" style="background:rgba(244,240,230,.1);border-color:rgba(244,240,230,.2);color:var(--crema);">
+      <span class="sn" style="background:var(--crema);color:var(--azul-verde);">3</span> Design Thinking
+    </div>
+    <h2 class="sec-title reveal">Idear</h2>
+    <p class="sec-lead reveal">Generar diferentes propuestas y soluciones de diseño a partir de la problemática identificada. Explorar múltiples ideas que acerquen a las personas a la biodiversidad urbana.</p>
+
+    <!-- Lluvia de ideas -->
+    <h3 class="sub-title reveal">Lluvia de ideas</h3>
+    <div class="ideas-grid reveal">
+      <div class="idea-card d1"><div class="ico">🎯</div><h4>Stickers educativos</h4><p>Sets de stickers de especies urbanas para identificar y coleccionar.</p></div>
+      <div class="idea-card d2"><div class="ico">📅</div><h4>Calendarios ilustrados</h4><p>Calendarios con ilustraciones de especies urbanas presentes en Medellín.</p></div>
+      <div class="idea-card d3"><div class="ico">🎮</div><h4>Juegos de asociación visual</h4><p>Juegos visuales para reconocer y aprender sobre flora urbana.</p></div>
+      <div class="idea-card d1"><div class="ico">📖</div><h4>Guías de bolsillo</h4><p>Guías compactas y portables para identificar especies en los recorridos.</p></div>
+      <div class="idea-card d2"><div class="ico">🗺️</div><h4>Rutas narrativas desplegables</h4><p>Recorridos con historias sobre los corredores verdes de Medellín.</p></div>
+      <div class="idea-card d3"><div class="ico">🌿</div><h4>Archivos vivos / sistemas modulares</h4><p>Piezas interactivas para construir ecosistemas urbanos de forma dinámica.</p></div>
+    </div>
+
+    <!-- OPCIONES DE LOGO + LOGO FINAL: 2 columnas -->
+    <div style="margin-top:3rem;" class="reveal">
+      <div class="logo-2col">
+        <div class="logo-2col-block">
+          <h3 class="sub-title">Opciones de logo</h3>
+          <p>Se desarrollaron diferentes propuestas explorando distintas maneras de representar visualmente la esencia de Aburrá Vivo: elementos inspirados en la naturaleza, las redes urbanas y las conexiones ecológicas.</p>
+          <!-- image19 = opciones de logo -->
+          <img src="img/image19.png" alt="Opciones de logo">
+        </div>
+        <div class="logo-2col-block">
+          <h3 class="sub-title">Idea final del logo</h3>
+          <p>La propuesta final combina elementos orgánicos y geométricos para representar la conexión entre naturaleza y ciudad. Transmite la idea de Medellín como un sistema vivo atravesado por corredores verdes.</p>
+          <!-- image20 = logo final -->
+          <img src="img/image20.png" alt="Logo final Aburrá Vivo">
+        </div>
+      </div>
+    </div>
+
+    <!-- KIT EXPERIENCIAL -->
+    <div style="margin-top:4rem;" class="reveal">
+      <div class="sec-tag" style="color:rgba(244,240,230,.65)">Propuesta seleccionada</div>
+      <h3 class="sub-title">Kit experiencial "Aburrá Vivo"</h3>
+      <p style="font-size:.93rem;opacity:.8;max-width:700px;margin-bottom:2rem;line-height:1.75;">
+        Sistema progresivo donde el usuario pasa por diferentes momentos de exploración y conexión con la biodiversidad urbana, transformando el recorrido cotidiano por Medellín en una experiencia de observación y descubrimiento.
+      </p>
+
+      <div class="kit-grid">
+
+        <!-- MAPA: image28 -->
+        <div class="kit-piece reveal d1">
+          <div class="kit-img">
+            <img src="img/image28.jpeg" alt="Mapa de exploración">
+          </div>
+          <div class="kit-body">
+            <div class="kit-n">1</div>
+            <h4>Mapa de exploración</h4>
+            <p>Punto de entrada al sistema. Permite ubicar diferentes corredores verdes de Medellín con estructura desplegable que invita a explorar y reconocer los espacios naturales.</p>
+          </div>
+        </div>
+
+        <!-- TARJETAS: image29 + image30 -->
+        <div class="kit-piece reveal d2">
+          <div class="kit-2img">
+            <img src="img/image29.jpeg" alt="Tarjetas de reconocimiento">
+            <img src="img/image30.jpeg" alt="Tarjetas de reconocimiento">
+          </div>
+          <div class="kit-body">
+            <div class="kit-n">2</div>
+            <h4>Tarjetas de reconocimiento</h4>
+            <p>Ilustraciones simplificadas de especies vegetales de los corredores verdes. Información breve sobre características y beneficios ecológicos de cada especie.</p>
+          </div>
+        </div>
+
+        <!-- SIEMBRA: image31 + image32 + image33 -->
+        <div class="kit-piece reveal d3">
+          <div class="kit-3img">
+            <img src="img/image31.jpeg" alt="Sistema Siembra">
+            <img src="img/image32.jpeg" alt="Sistema Siembra">
+            <img src="img/image33.jpeg" alt="Sistema Siembra">
+          </div>
+          <div class="kit-body">
+            <div class="kit-n">3</div>
+            <h4>Sistema de acción – Siembra</h4>
+            <p>Semillas y elementos para incentivar pequeñas acciones de siembra y cuidado ambiental. El usuario participa activamente en el fortalecimiento de la relación ciudad-naturaleza.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOCETOS DEL EXHIBIDOR: image34 -->
+    <div style="margin-top:4rem;" class="reveal">
+      <h3 class="sub-title">Bocetos del exhibidor</h3>
+      <p style="font-size:.9rem;opacity:.8;max-width:640px;margin-bottom:1rem;line-height:1.7;">
+        Bocetos del exhibidor donde se ubicaría la caja contenedora del kit experiencial. Estas propuestas exploraron diferentes formas de presentación, organización y visualización del sistema dentro del espacio expositivo.
+      </p>
+      <!-- image34.jpeg = bocetos del exhibidor -->
+      <div class="boceto-img">
+        <img src="img/image34.jpeg" alt="Bocetos del exhibidor">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ ETAPA 4: PROTOTIPAR ══════════════════════ -->
+<section class="section" id="prototipar" style="background:var(--crema);">
+  <div class="inner">
+
+    <!-- image35.png = banner de la etapa Prototipar -->
+    <div class="stage-banner reveal">
+      <img src="img/image35.png" alt="Etapa Prototipar">
+    </div>
+
+    <div class="step-badge reveal"><span class="sn" style="background:var(--rosa);color:var(--crema);">4</span> Design Thinking</div>
+    <h2 class="sec-title reveal">Prototipar</h2>
+    <p class="sec-lead reveal" style="color:rgba(11,38,26,.72)">Convertir las ideas en propuestas visuales y funcionales más concretas. Pruebas de formatos, materiales e interacción para mejorar la experiencia del usuario antes de la versión final.</p>
+
+    <!-- EMPAQUE: image36–image42 (7 imágenes) -->
+    <div class="reveal" style="margin-bottom:4rem;">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Prototipo del empaque</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.72);max-width:680px;margin-bottom:1.3rem;">
+        Diferentes pruebas para definir la estructura y presentación del empaque del kit. Se exploraron tamaños, distribución de piezas y materiales buscando que fuera funcional, resistente y coherente con la identidad visual del proyecto.
+      </p>
+      <!-- image36 (primera: ancha) → image37–42 (pequeñas) -->
+      <div class="empaque-imgs">
+        <img src="img/image36.jpeg" alt="Prototipo empaque 1">
+        <img src="img/image37.jpeg" alt="Prototipo empaque 2">
+        <img src="img/image38.jpeg" alt="Prototipo empaque 3">
+        <img src="img/image39.jpeg" alt="Prototipo empaque 4">
+        <img src="img/image40.jpeg" alt="Prototipo empaque 5">
+        <img src="img/image41.jpeg" alt="Prototipo empaque 6">
+        <img src="img/image42.jpeg" alt="Prototipo empaque 7">
+      </div>
+    </div>
+
+    <!-- MAPA PROTOTIPO: image43 + image44 -->
+    <div class="proto-grid">
+      <div class="proto-block reveal-l">
+        <h3 class="sub-title" style="color:var(--verde-oscuro)">Prototipo del mapa</h3>
+        <p>Pruebas de plegado, organización visual y distribución de información para facilitar la exploración de los corredores verdes. Rutas, conexiones y elementos gráficos que ayudan al usuario a reconocer espacios naturales de manera más dinámica.</p>
+        <!-- image43 + image44 -->
+        <div class="mapa-imgs">
+          <img src="img/image43.png" alt="Prototipo mapa 1" onerror="this.style.display='none'">
+          <img src="img/image44.png" alt="Prototipo mapa 2" onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <!-- TARJETAS PROTOTIPO: image45 + image46 + image47 -->
+      <div class="proto-block reveal-r">
+        <h3 class="sub-title" style="color:var(--verde-oscuro)">Prototipo de las tarjetas</h3>
+        <p>Pruebas relacionadas con tamaño, ilustración, jerarquías visuales y cantidad de información, buscando mantener una lectura rápida y visual de las especies presentes en los corredores verdes.</p>
+        <!-- image45 + image46 + image47 -->
+        <div class="tarjetas-imgs">
+          <img src="img/image45.png" alt="Tarjeta prototipo 1" onerror="this.style.display='none'">
+          <img src="img/image46.png" alt="Tarjeta prototipo 2" onerror="this.style.display='none'">
+          <img src="img/image47.png" alt="Tarjeta prototipo 3" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer style="position:relative;overflow:hidden;">
+  <!-- Logos institucionales como fondo dentro del footer -->
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4rem;flex-wrap:wrap;pointer-events:none;padding:2rem;">
+    <img src="https://cdnwordpresstest-f0ekdgevcngegudb.z01.azurefd.net/es/wp-content/uploads/2026/04/Logo_Alcaldi%CC%81a_UnaTinta_ContenedorBlancoHueso_RGB-1024x781.png" alt="" style="height:130px;object-fit:contain;opacity:.07;" onerror="this.style.display='none'">
+    <img src="img/image50.png" alt="" style="height:130px;object-fit:contain;filter:brightness(10) saturate(0);opacity:.04;" onerror="this.style.display='none'">
+    <img src="img/image51.png" alt="" style="height:130px;object-fit:contain;filter:brightness(10) saturate(0);opacity:.04;" onerror="this.style.display='none'">
+  </div>
+
+  <div class="foot-inner" style="position:relative;z-index:1;">
+    <div class="foot-brand">
+      <img src="img/image48.png" alt="Logo Aburrá Vivo" style="height:90px;object-fit:contain;mix-blend-mode:screen;margin-bottom:.75rem;">
+      <p>Un proyecto que conecta a las personas con los corredores verdes de Medellín y la biodiversidad urbana que los rodea. Sincronía entre Concreto y Tejido Vivo.</p>
+    </div>
+    <div class="foot-sec">
+      <h5>Design Thinking</h5>
+      <ul>
+        <li><a href="#empatizar">① Empatizar</a></li>
+        <li><a href="#definir">② Definir</a></li>
+        <li><a href="#idear">③ Idear</a></li>
+        <li><a href="#prototipar">④ Prototipar</a></li>
+      </ul>
+    </div>
+    <div class="foot-sec">
+      <h5>El Proyecto</h5>
+      <ul>
+        <li><a href="#about">¿Qué es Aburrá Vivo?</a></li>
+        <li><a href="#about">Corredores verdes</a></li>
+        <li><a href="#definir">Identidad visual</a></li>
+        <li><a href="#idear">Kit experiencial</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div>PIA 2026_1 – Proyecto Integrador de Aula</div>
+    <div class="foot-authors">
+      <span>Juliana Cruz Monzalve</span>
+      <span>Sofia Castañeda Martinez</span>
+      <span>Yulieth Jimena Valencia Valencia</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════ LIGHTBOX ══════════════════════ -->
+<style>
+  #lightbox {
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(11,38,26,0.96);
+    backdrop-filter: blur(16px);
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    opacity: 0; visibility: hidden;
+    transition: opacity .3s ease, visibility .3s ease;
+    padding: 2rem;
+  }
+  #lightbox.lb-open { opacity: 1; visibility: visible; }
+  #lb-img-wrap { flex: 1; max-width: 90vw; max-height: 88vh; display: flex; align-items: center; justify-content: center; }
+  #lb-img {
+    max-width: 100%; max-height: 88vh; object-fit: contain;
+    border-radius: 12px; box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    opacity: 0; transform: scale(0.96);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  #lb-close {
+    position: absolute; top: 1.25rem; right: 1.5rem;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(244,240,230,0.12); border: 1px solid rgba(244,240,230,0.2);
+    color: #F4F0E6; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .2s; z-index: 1;
+  }
+  #lb-close:hover { background: rgba(244,240,230,0.22); transform: rotate(90deg); }
+  #lb-prev, #lb-next {
+    width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(244,240,230,0.1); border: 1px solid rgba(244,240,230,0.18);
+    color: #F4F0E6; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .2s;
+  }
+  #lb-prev:hover { background: rgba(244,240,230,0.2); transform: translateX(-3px); }
+  #lb-next:hover { background: rgba(244,240,230,0.2); transform: translateX(3px); }
+  #lb-counter {
+    position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    font-size: .82rem; color: rgba(244,240,230,0.55);
+    background: rgba(11,38,26,0.7); padding: .35rem .9rem; border-radius: 100px;
+    pointer-events: none;
+  }
+  @media (max-width: 600px) {
+    #lb-prev, #lb-next { width: 38px; height: 38px; }
+    #lightbox { gap: .5rem; padding: 1rem; }
+  }
+</style>
+
+<div id="lightbox">
+  <button id="lb-close" aria-label="Cerrar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button id="lb-prev" aria-label="Anterior">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div id="lb-img-wrap">
+    <img id="lb-img" src="" alt="">
+  </div>
+  <button id="lb-next" aria-label="Siguiente">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div id="lb-counter"></div>
+</div>
+
+<script>
+// ── LOADER ──
+window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1900));
+
+// ── PARTICLES ──
+const pc = document.getElementById('particles');
+for (let i = 0; i < 16; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const s = Math.random() * 55 + 18;
+  p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${Math.random()*6+6}s;--dl:${Math.random()*-8}s;`;
+  pc.appendChild(p);
+}
+
+// ── SCROLL FX ──
+const nav = document.getElementById('nav');
+const prog = document.getElementById('prog');
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY, total = document.body.scrollHeight - window.innerHeight;
+  prog.style.width = (y / total * 100) + '%';
+  nav.classList.toggle('scrolled', y > 60);
+  btt.classList.toggle('vis', y > 300);
+  // active link
+  ['inicio','about','empatizar','definir','idear','prototipar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const a = document.querySelector(`.nav-links a[href="#${id}"]`);
+    if (a) a.classList.toggle('active', r.top <= 100 && r.bottom > 100);
+  });
+});
+btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// ── DROPDOWN ──
+const ddtog = document.getElementById('dd-toggle');
+const dd = document.getElementById('dropdown');
+ddtog.addEventListener('click', e => { e.preventDefault(); ddtog.classList.toggle('dd-open'); dd.classList.toggle('open'); });
+document.addEventListener('click', e => { if (!ddtog.contains(e.target) && !dd.contains(e.target)) { ddtog.classList.remove('dd-open'); dd.classList.remove('open'); } });
+dd.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { ddtog.classList.remove('dd-open'); dd.classList.remove('open'); }));
+
+// ── HAMBURGER ──
+const ham = document.getElementById('ham');
+const mob = document.getElementById('mob');
+ham.addEventListener('click', () => { ham.classList.toggle('open'); mob.classList.toggle('open'); document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : ''; });
+mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { ham.classList.remove('open'); mob.classList.remove('open'); document.body.style.overflow = ''; }));
+
+// ── REVEAL ──
+const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed'); }), { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.reveal, .reveal-l, .reveal-r').forEach(el => obs.observe(el));
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }); }
+  });
+});
+
+// ── SWATCH COPY ──
+document.querySelectorAll('.sw-circle').forEach(s => {
+  s.addEventListener('click', () => {
+    navigator.clipboard.writeText(s.style.background).catch(() => {});
+    const prev = s.style.transform; s.style.transform = 'scale(1.18)';
+    setTimeout(() => s.style.transform = prev, 300);
+  });
+});
+
+// ── LIGHTBOX ──
+(function() {
+  const lb      = document.getElementById('lightbox');
+  const lbImg   = document.getElementById('lb-img');
+  const lbClose = document.getElementById('lb-close');
+  const lbPrev  = document.getElementById('lb-prev');
+  const lbNext  = document.getElementById('lb-next');
+  const lbCount = document.getElementById('lb-counter');
+
+  let imgs = [];
+  let cur  = 0;
+
+  // Tags/selectors to skip
+  function isExcluded(img) {
+    if (img.closest('nav'))          return true;
+    if (img.closest('.foot-brand'))  return true;
+    if (img.closest('[style*="position:absolute"]')) return true;
+    if (img.getAttribute('alt') === '') return true; // decorative bg images
+    return false;
+  }
+
+  // Build global image list once
+  function buildList() {
+    imgs = Array.from(document.querySelectorAll('img')).filter(img => {
+      if (isExcluded(img)) return false;
+      if (!img.src || img.src === window.location.href) return false;
+      return true;
+    });
+  }
+
+  function show(idx) {
+    cur = (idx + imgs.length) % imgs.length;
+    lbImg.style.opacity   = '0';
+    lbImg.style.transform = 'scale(0.94)';
+    setTimeout(() => {
+      lbImg.src             = imgs[cur].src;
+      lbImg.style.opacity   = '1';
+      lbImg.style.transform = 'scale(1)';
+    }, 160);
+    lbCount.textContent = (cur + 1) + ' / ' + imgs.length;
+    lbPrev.style.visibility = imgs.length > 1 ? 'visible' : 'hidden';
+    lbNext.style.visibility = imgs.length > 1 ? 'visible' : 'hidden';
+  }
+
+  function open(img) {
+    buildList();
+    const idx = imgs.indexOf(img);
+    lb.classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+    show(idx >= 0 ? idx : 0);
+  }
+
+  function close() {
+    lb.classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+
+  // Controls
+  lbClose.addEventListener('click', close);
+  lb.addEventListener('click',      e => { if (e.target === lb || e.target === document.getElementById('lb-img-wrap')) close(); });
+  lbPrev.addEventListener('click',  e => { e.stopPropagation(); show(cur - 1); });
+  lbNext.addEventListener('click',  e => { e.stopPropagation(); show(cur + 1); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('lb-open')) return;
+    if (e.key === 'Escape')      close();
+    if (e.key === 'ArrowLeft')   show(cur - 1);
+    if (e.key === 'ArrowRight')  show(cur + 1);
+  });
+
+  // Attach click to every content image after DOM is ready
+  function attachClicks() {
+    buildList();
+    imgs.forEach(img => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', () => open(img));
+    });
+  }
+
+  attachClicks();
+})();
+</script>
+
+</body>
+</html>

@@ -217,7 +217,7 @@
     .c-text p { font-size: .84rem; line-height: 1.6; color: rgba(11,38,26,.65); }
     /* referentes: 12 images in a masonry-like grid */
     .ref-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .75rem; margin-top: 1.5rem; }
-    .ref-grid img { border-radius: 10px; aspect-ratio: 1; object-fit: cover; transition: transform var(--tr); }
+    .ref-grid img { width: 100%; height: 100%; border-radius: 10px; aspect-ratio: 1; object-fit: cover; object-position: center; transition: transform var(--tr); }
     .ref-grid img:hover { transform: scale(1.05); }
     /* moodboard: single full-width image */
     .moodboard-img { border-radius: 18px; overflow: hidden; margin-top: 1.5rem; }
@@ -312,7 +312,7 @@
 
     /* ─── FOOTER ─── */
     footer { background: var(--verde-oscuro); color: var(--crema); padding: 4rem 2rem 2rem; }
-    .foot-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; }
+    .foot-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr; gap: 3rem; }
     .foot-brand .nav-logo { margin-bottom: 1rem; }
     .foot-brand p { font-size: .87rem; line-height: 1.7; opacity: .6; max-width: 280px; }
     .foot-sec h5 { font-size: .82rem; text-transform: uppercase; letter-spacing: .13em; color: var(--verde-lima); margin-bottom: 1rem; }
@@ -918,15 +918,6 @@
         <li><a href="#definir">② Definir</a></li>
         <li><a href="#idear">③ Idear</a></li>
         <li><a href="#prototipar">④ Prototipar</a></li>
-      </ul>
-    </div>
-    <div class="foot-sec">
-      <h5>El Proyecto</h5>
-      <ul>
-        <li><a href="#about">¿Qué es Aburrá Vivo?</a></li>
-        <li><a href="#about">Corredores verdes</a></li>
-        <li><a href="#definir">Identidad visual</a></li>
-        <li><a href="#idear">Kit experiencial</a></li>
       </ul>
     </div>
   </div>

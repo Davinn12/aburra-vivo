@@ -301,6 +301,10 @@
     .empaque-imgs img { border-radius: 10px; aspect-ratio: 1; object-fit: cover; transition: transform var(--tr); }
     .empaque-imgs img:hover { transform: scale(1.05); }
     .empaque-imgs img:first-child { grid-column: 1 / -1; aspect-ratio: 16/6; }
+    /* troquel: all images equal size */
+    .troquel-imgs { display: grid; grid-template-columns: repeat(4,1fr); gap: .65rem; }
+    .troquel-imgs img { border-radius: 10px; aspect-ratio: 1; object-fit: cover; transition: transform var(--tr); }
+    .troquel-imgs img:hover { transform: scale(1.05); }
     /* mapa proto: 2 images */
     .mapa-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
     .mapa-imgs img { border-radius: 12px; aspect-ratio: 4/3; object-fit: cover; transition: transform var(--tr); }
@@ -309,6 +313,43 @@
     .tarjetas-imgs { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; margin-top: 1rem; }
     .tarjetas-imgs img { border-radius: 12px; aspect-ratio: 3/4; object-fit: cover; box-shadow: 0 4px 16px rgba(11,38,26,.1); transition: transform var(--tr); }
     .tarjetas-imgs img:hover { transform: scale(1.04); }
+
+    /* ─── DIVULGAR ─── */
+    #divulgar { background: var(--verde-oscuro); color: var(--crema); }
+    #divulgar .sec-lead { color: rgba(244,240,230,.72); }
+    #divulgar .sub-title { color: var(--crema); }
+    .divulgar-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 2rem; margin-bottom: 4rem; }
+    .div-piece { background: rgba(244,240,230,.07); border: 1px solid rgba(244,240,230,.14); border-radius: 18px; overflow: hidden; transition: transform var(--tr), box-shadow var(--tr); }
+    .div-piece:hover { transform: translateY(-6px); box-shadow: 0 18px 44px rgba(0,0,0,.25); }
+    .div-img { overflow: hidden; }
+    .div-img img { width: 100%; aspect-ratio: 4/3; object-fit: cover; transition: transform var(--tr); }
+    .div-piece:hover .div-img img { transform: scale(1.06); }
+    .div-body { padding: 1.4rem; }
+    .div-body h4 { font-size: 1rem; margin-bottom: .4rem; }
+    .div-body p { font-size: .86rem; line-height: 1.65; opacity: .75; }
+    /* rompe tráfico: 2 images */
+    .rompe-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: 1.5rem; }
+    .rompe-imgs img { border-radius: 12px; aspect-ratio: 3/4; object-fit: cover; transition: transform var(--tr); }
+    .rompe-imgs img:hover { transform: scale(1.04); }
+    /* anexos */
+    .anexos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .anexo-card { background: rgba(244,240,230,.07); border: 1px solid rgba(244,240,230,.14); border-radius: 18px; padding: 2rem; display: flex; flex-direction: column; gap: 1rem; transition: background var(--tr), transform var(--tr); }
+    .anexo-card:hover { background: rgba(244,240,230,.12); transform: translateY(-4px); }
+    .anexo-icon { font-size: 2rem; }
+    .anexo-card h4 { font-size: 1.05rem; }
+    .anexo-card p { font-size: .86rem; line-height: 1.65; opacity: .72; }
+    .anexo-link { display: inline-flex; align-items: center; gap: .45rem; background: var(--verde-lima); color: var(--verde-oscuro); border-radius: 100px; padding: .55rem 1.1rem; font-family: var(--font-title); font-size: .82rem; font-weight: 600; transition: transform var(--tr), box-shadow var(--tr); width: fit-content; }
+    .anexo-link:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(159,187,68,.4); }
+    /* proto single image */
+    .proto-single-img { border-radius: 16px; overflow: hidden; margin-top: 1rem; }
+    .proto-single-img img { width: 100%; object-fit: cover; max-height: 380px; }
+    @media (max-width: 900px) {
+      .divulgar-grid { grid-template-columns: 1fr; }
+      .anexos-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 580px) {
+      .rompe-imgs { grid-template-columns: 1fr; }
+    }
 
     /* ─── FOOTER ─── */
     footer { background: var(--verde-oscuro); color: var(--crema); padding: 4rem 2rem 2rem; }
@@ -341,6 +382,7 @@
       .proto-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .empaque-imgs { grid-template-columns: repeat(3,1fr); }
       .empaque-imgs img:first-child { grid-column: 1/-1; }
+      .troquel-imgs { grid-template-columns: repeat(3,1fr); }
       .tarjetas-imgs { grid-template-columns: 1fr 1fr; }
       .foot-inner { grid-template-columns: 1fr; gap: 2rem; }
       .foot-bottom { flex-direction: column; text-align: center; }
@@ -355,6 +397,7 @@
       .ilus-grid { grid-template-columns: 1fr 1fr; }
       .ideas-grid { grid-template-columns: 1fr; }
       .empaque-imgs { grid-template-columns: 1fr 1fr; }
+      .troquel-imgs { grid-template-columns: 1fr 1fr; }
       .tarjetas-imgs { grid-template-columns: 1fr; }
       .section { padding: 5rem 1.25rem; }
       .kit-2img { grid-template-columns: 1fr; }
@@ -397,6 +440,7 @@
         <li><a href="#definir"><span class="step-num">2</span> Definir</a></li>
         <li><a href="#idear"><span class="step-num">3</span> Idear</a></li>
         <li><a href="#prototipar"><span class="step-num">4</span> Prototipar</a></li>
+        <li><a href="#divulgar"><span class="step-num">5</span> Divulgar</a></li>
       </ul>
     </li>
   </ul>
@@ -413,6 +457,7 @@
     <a href="#definir" class="mob-link">② Definir</a>
     <a href="#idear" class="mob-link">③ Idear</a>
     <a href="#prototipar" class="mob-link">④ Prototipar</a>
+    <a href="#divulgar" class="mob-link">⑤ Divulgar</a>
   </div>
 </div>
 
@@ -858,7 +903,7 @@
         Diferentes pruebas para definir la estructura y presentación del empaque del kit. Se exploraron tamaños, distribución de piezas y materiales buscando que fuera funcional, resistente y coherente con la identidad visual del proyecto.
       </p>
       <!-- image36 (primera: ancha) → image37–42 (pequeñas) -->
-      <div class="empaque-imgs">
+      <div class="troquel-imgs">
         <img src="img/image36.jpeg" alt="Prototipo empaque 1">
         <img src="img/image37.jpeg" alt="Prototipo empaque 2">
         <img src="img/image38.jpeg" alt="Prototipo empaque 3">
@@ -869,15 +914,33 @@
       </div>
     </div>
 
+    <!-- TROQUEL Y DISEÑO DE EMPAQUE -->
+    <div class="reveal" style="margin-bottom:4rem;">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Troquel y diseño de empaque del kit</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.72);max-width:680px;margin-bottom:1.3rem;">
+        Desarrollo del troquel y diseño estructural del empaque del kit experiencial Aburrá Vivo. Las medidas iniciales planteadas eran de 35 cm de ancho, 27 cm de alto y 12 cm de profundidad, permitiendo la correcta organización del mapa, las tarjetas, la bitácora y los demás elementos del sistema dentro de la caja.
+      </p>
+      <div class="troquel-imgs">
+        <img src="img/trq1.png" alt="Troquel empaque 1" onerror="this.style.display='none'">
+        <img src="img/trq2.png" alt="Troquel empaque 2" onerror="this.style.display='none'">
+        <img src="img/trq3.png" alt="Troquel empaque 3" onerror="this.style.display='none'">
+        <img src="img/trq4.png" alt="Troquel empaque 4" onerror="this.style.display='none'">
+        <img src="img/trq5.png" alt="Troquel empaque 5" onerror="this.style.display='none'">
+        <img src="img/trq6.png" alt="Troquel empaque 6" onerror="this.style.display='none'">
+        <img src="img/trq7.png" alt="Troquel empaque 7" onerror="this.style.display='none'">
+        <img src="img/trq8.png" alt="Troquel empaque 8" onerror="this.style.display='none'">
+      </div>
+    </div>
+
     <!-- MAPA PROTOTIPO: image43 + image44 -->
     <div class="proto-grid">
       <div class="proto-block reveal-l">
         <h3 class="sub-title" style="color:var(--verde-oscuro)">Prototipo del mapa</h3>
         <p>Pruebas de plegado, organización visual y distribución de información para facilitar la exploración de los corredores verdes. Rutas, conexiones y elementos gráficos que ayudan al usuario a reconocer espacios naturales de manera más dinámica.</p>
-        <!-- image43 + image44 -->
-        <div class="mapa-imgs">
+        <div class="tarjetas-imgs">
           <img src="img/image43.png" alt="Prototipo mapa 1" onerror="this.style.display='none'">
           <img src="img/image44.png" alt="Prototipo mapa 2" onerror="this.style.display='none'">
+          <img src="img/image53.png" alt="Prototipo mapa 3" onerror="this.style.display='none'">
         </div>
       </div>
 
@@ -890,6 +953,103 @@
           <img src="img/image45.png" alt="Tarjeta prototipo 1" onerror="this.style.display='none'">
           <img src="img/image46.png" alt="Tarjeta prototipo 2" onerror="this.style.display='none'">
           <img src="img/image47.png" alt="Tarjeta prototipo 3" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+
+    <!-- BITÁCORA PROTOTIPO -->
+    <div class="reveal" style="margin-top:4rem;">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Prototipo de la bitácora</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.72);max-width:680px;margin-bottom:1rem;">La bitácora fue planteada inicialmente con medidas de 11 cm de ancho por 14 cm de alto, permitiendo un formato compacto y funcional para registrar observaciones, recorridos y experiencias relacionadas con los corredores verdes de Medellín. Su tamaño facilitaba la integración dentro del sistema del kit y el transporte por parte del usuario.</p>
+      <div class="mapa-imgs">
+        <img src="img/image57.png" alt="Prototipo bitácora 1" onerror="this.style.display='none'">
+        <img src="img/image58.png" alt="Prototipo bitácora 2" onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <!-- EXHIBIDOR PROTOTIPO -->
+    <div class="reveal" style="margin-top:3rem;">
+      <h3 class="sub-title" style="color:var(--verde-oscuro)">Prototipo del exhibidor</h3>
+      <p style="font-size:.92rem;line-height:1.75;color:rgba(11,38,26,.72);max-width:680px;margin-bottom:1rem;">El exhibidor fue planteado inicialmente con una altura aproximada de 65 cm, buscando una estructura visible, estable y funcional para la presentación del kit experiencial Aburrá Vivo. Su diseño sostenía la caja contenedora del sistema y permitía una visualización clara de los elementos del proyecto dentro del espacio expositivo.</p>
+      <div style="border-radius:16px;overflow:hidden;max-width:360px;">
+        <img src="img/image59.png" alt="Prototipo del exhibidor" style="width:100%;display:block;object-fit:contain;" onerror="this.style.display='none'">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ ETAPA 5: DIVULGAR ══════════════════════ -->
+<section class="section" id="divulgar">
+  <div class="inner">
+
+    <!-- image60.png = banner de la etapa Divulgar -->
+    <div class="stage-banner reveal">
+      <img src="img/image60.png" alt="Etapa Divulgar">
+    </div>
+
+    <div class="step-badge reveal" style="background:rgba(244,240,230,.1);border-color:rgba(244,240,230,.2);color:var(--crema);">
+      <span class="sn" style="background:var(--verde-lima);color:var(--verde-oscuro);">5</span> Design Thinking
+    </div>
+    <h2 class="sec-title reveal">Divulgar</h2>
+    <p class="sec-lead reveal">La etapa de divulgar tuvo como objetivo presentar y comunicar el resultado final del proyecto Aburrá Vivo, mostrando el desarrollo del sistema experiencial y su relación con los corredores verdes de Medellín.</p>
+
+    <h3 class="sub-title reveal">Presentación final del proyecto Aburrá Vivo</h3>
+    <p style="font-size:.93rem;opacity:.8;max-width:700px;margin-bottom:2.5rem;line-height:1.75;" class="reveal">
+      Se mostraron las versiones finales del kit experiencial, incluyendo el empaque, el mapa, las tarjetas, la bitácora y el exhibidor. Las fotografías finales evidencian el funcionamiento del sistema, la identidad visual y la relación entre todos los componentes del proyecto.
+    </p>
+
+    <!-- KIT EXPERIENCIA: image61–image66 (6 imágenes) -->
+    <div class="reveal" style="margin-bottom:3.5rem;">
+      <h3 class="sub-title">Kit experiencia</h3>
+      <div class="troquel-imgs">
+        <img src="img/image61.jpeg" alt="Kit experiencia 1" onerror="this.style.display='none'">
+        <img src="img/image62.jpeg" alt="Kit experiencia 2" onerror="this.style.display='none'">
+        <img src="img/image63.jpeg" alt="Kit experiencia 3" onerror="this.style.display='none'">
+        <img src="img/image64.jpeg" alt="Kit experiencia 4" onerror="this.style.display='none'">
+        <img src="img/image65.jpeg" alt="Kit experiencia 5" onerror="this.style.display='none'">
+        <img src="img/image66.jpeg" alt="Kit experiencia 6" onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <!-- EXHIBIDOR Y DISPENSADOR: image67 + image68 -->
+    <div class="reveal" style="margin-bottom:3.5rem;">
+      <h3 class="sub-title">Exhibidor y Dispensador</h3>
+      <div class="mapa-imgs">
+        <img src="img/image67.jpeg" alt="Exhibidor y Dispensador 1" onerror="this.style.display='none'">
+        <img src="img/image68.jpeg" alt="Exhibidor y Dispensador 2" onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <!-- ROMPE TRÁFICO: image69 -->
+    <div class="reveal" style="margin-bottom:3.5rem;">
+      <h3 class="sub-title">Rompe tráfico</h3>
+      <div class="boceto-img">
+        <img src="img/image69.jpeg" alt="Rompe tráfico Aburrá Vivo" onerror="this.style.display='none'">
+      </div>
+    </div>
+
+    <!-- ANEXOS -->
+    <div class="reveal">
+      <h3 class="sub-title">Anexos</h3>
+      <div class="anexos-grid">
+        <div class="anexo-card">
+          <div class="anexo-icon">📘</div>
+          <h4>Manual de marca</h4>
+          <p>Sistema de identidad visual y lineamientos gráficos de Aburrá Vivo. Incluye paleta de color, tipografías, uso del logo, ilustraciones y aplicaciones del sistema.</p>
+          <a href="https://drive.google.com/drive/folders/1SgjC2rQuc-zUvtJpEouR7K21Y37jyEwJ?usp=drive_link" target="_blank" class="anexo-link">
+            Ver documento
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+        <div class="anexo-card">
+          <div class="anexo-icon">📗</div>
+          <h4>Metodología del proyecto</h4>
+          <p>Proceso completo de investigación, diseño y desarrollo del proyecto. Incluye las cinco etapas del Design Thinking aplicadas al desarrollo de Aburrá Vivo.</p>
+          <a href="https://drive.google.com/drive/folders/1zK8UAZ14RVdGluLuqlOR_0692A2yjlW2?usp=drive_link" target="_blank" class="anexo-link">
+            Explorar documento
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
         </div>
       </div>
     </div>
@@ -918,6 +1078,7 @@
         <li><a href="#definir">② Definir</a></li>
         <li><a href="#idear">③ Idear</a></li>
         <li><a href="#prototipar">④ Prototipar</a></li>
+        <li><a href="#divulgar">⑤ Divulgar</a></li>
       </ul>
     </div>
   </div>
@@ -1020,7 +1181,7 @@ window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', y > 60);
   btt.classList.toggle('vis', y > 300);
   // active link
-  ['inicio','about','empatizar','definir','idear','prototipar'].forEach(id => {
+  ['inicio','about','empatizar','definir','idear','prototipar','divulgar'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     const r = el.getBoundingClientRect();
